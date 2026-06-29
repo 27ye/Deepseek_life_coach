@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Django Chapter 1–8 互动答题题库（400题）</title>
+<style>
+:root{--bg:#f5f7fb;--card:#fff;--text:#182230;--muted:#65758b;--line:#dbe3ee;--primary:#2563eb;--primary-soft:#eaf1ff;--good:#15803d;--good-bg:#ecfdf3;--bad:#c62828;--bad-bg:#fff0f0;--warn:#b45309;--warn-bg:#fff7e6;--shadow:0 8px 24px rgba(15,23,42,.07)}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",Arial,sans-serif;line-height:1.6}
+button,select,input{font:inherit}.topbar{position:sticky;top:0;z-index:20;background:rgba(255,255,255,.94);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.topbar-inner{max-width:1480px;margin:auto;padding:12px 20px;display:flex;gap:16px;align-items:center}.brand{min-width:290px}.brand h1{font-size:19px;margin:0}.brand p{font-size:12px;color:var(--muted);margin:1px 0 0}.progress-wrap{flex:1}.progress-meta{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-bottom:5px}.progress-track{height:9px;background:#e7edf5;border-radius:999px;overflow:hidden}.progress-bar{height:100%;width:0;background:var(--primary);transition:width .25s}
+.layout{max-width:1480px;margin:auto;display:grid;grid-template-columns:260px minmax(0,1fr);gap:22px;padding:22px 20px 50px}.sidebar{position:sticky;top:86px;height:calc(100vh - 106px);overflow:auto;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px;box-shadow:var(--shadow)}
+.side-title{font-size:13px;color:var(--muted);font-weight:700;margin:2px 7px 10px}.chapter-btn{width:100%;border:0;background:transparent;padding:10px 11px;border-radius:10px;text-align:left;cursor:pointer;margin-bottom:4px;color:var(--text)}.chapter-btn:hover{background:#f1f5f9}.chapter-btn.active{background:var(--primary-soft);color:#1749a6;font-weight:700}.chapter-btn small{display:block;color:var(--muted);font-weight:400}.side-sep{height:1px;background:var(--line);margin:12px 0}.mode-btn{width:100%;border:1px solid var(--line);background:#fff;padding:9px 10px;border-radius:9px;cursor:pointer;margin-bottom:7px;text-align:left}.mode-btn.active{border-color:var(--primary);background:var(--primary-soft);color:#1749a6;font-weight:700}
+.main{min-width:0}.hero{background:linear-gradient(135deg,#1d4ed8,#3b82f6);color:#fff;border-radius:18px;padding:24px 26px;box-shadow:var(--shadow);margin-bottom:18px}.hero h2{margin:0;font-size:25px}.hero p{margin:5px 0 0;opacity:.9}.toolbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px;margin-bottom:16px;position:sticky;top:72px;z-index:10;box-shadow:0 4px 15px rgba(15,23,42,.05)}
+.btn{border:1px solid var(--line);background:#fff;color:var(--text);padding:9px 14px;border-radius:9px;cursor:pointer;font-weight:650}.btn:hover{background:#f8fafc}.btn.primary{background:var(--primary);border-color:var(--primary);color:#fff}.btn.danger{color:var(--bad);border-color:#f1b8b8}.toolbar-spacer{flex:1}.counter{font-size:13px;color:var(--muted);font-weight:650}.select{border:1px solid var(--line);background:#fff;border-radius:9px;padding:8px 10px}
+.result-banner{display:none;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px 18px;margin-bottom:16px;box-shadow:var(--shadow)}.result-banner.show{display:block}.score-line{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}.score-big{font-size:28px;font-weight:800;color:var(--primary)}.stat-pills{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}.pill{font-size:13px;padding:4px 9px;border-radius:999px;background:#eef2f7}.pill.good{background:var(--good-bg);color:var(--good)}.pill.bad{background:var(--bad-bg);color:var(--bad)}.pill.warn{background:var(--warn-bg);color:var(--warn)}
+.section-heading{display:flex;align-items:center;gap:10px;margin:25px 2px 10px}.section-heading h3{margin:0;font-size:17px}.section-heading span{font-size:12px;color:var(--muted);background:#e9eef5;border-radius:999px;padding:3px 8px}
+.question-card{background:var(--card);border:1px solid var(--line);border-radius:15px;padding:18px 18px 15px;margin-bottom:13px;box-shadow:0 3px 13px rgba(15,23,42,.035);scroll-margin-top:145px}.question-card.correct-card{border-left:5px solid var(--good)}.question-card.wrong-card{border-left:5px solid var(--bad)}.question-card.unanswered-card{border-left:5px solid var(--warn)}
+.q-head{display:flex;gap:10px;align-items:flex-start}.q-num{flex:none;background:#e8eef8;color:#274b7a;font-weight:800;border-radius:8px;padding:2px 8px;font-size:13px}.q-status{margin-left:auto;font-weight:800;font-size:13px}.q-status.good{color:var(--good)}.q-status.bad{color:var(--bad)}.q-status.warn{color:var(--warn)}.qtext{white-space:pre-wrap;word-break:break-word;font-family:ui-monospace,SFMono-Regular,Consolas,"Liberation Mono",monospace;font-size:14px;margin:10px 0 13px;background:#f8fafc;border-radius:10px;padding:12px;overflow:auto}
+.options{display:grid;gap:8px}.option{display:flex;align-items:flex-start;gap:9px;border:1px solid var(--line);border-radius:10px;padding:10px 11px;cursor:pointer;background:#fff;transition:.15s}.option:hover{border-color:#9bb7e8;background:#fafcff}.option input{margin-top:5px;accent-color:var(--primary)}.option-key{font-weight:800;min-width:20px}.option-text{white-space:pre-wrap;word-break:break-word;font-family:ui-monospace,SFMono-Regular,Consolas,"Liberation Mono",monospace;font-size:13px}.option.selected{border-color:var(--primary);background:var(--primary-soft)}.option.correct-option{border-color:#65bd80;background:var(--good-bg)}.option.wrong-option{border-color:#e49393;background:var(--bad-bg)}
+.explanation{display:none;margin-top:12px;border-top:1px dashed var(--line);padding-top:11px;font-size:14px}.question-card.graded .explanation{display:block}.answer-line{font-weight:750;color:var(--good)}.note{margin-top:6px;color:#7a4b00;background:var(--warn-bg);border-radius:8px;padding:8px 10px}.empty{background:#fff;border:1px dashed var(--line);border-radius:14px;padding:35px;text-align:center;color:var(--muted)}
+.floating-top{position:fixed;right:20px;bottom:20px;width:44px;height:44px;border-radius:50%;border:1px solid var(--line);background:#fff;box-shadow:var(--shadow);cursor:pointer;font-weight:800}.mobile-chapter{display:none}.footer{text-align:center;color:var(--muted);font-size:12px;padding:22px}
+@media(max-width:900px){.brand{min-width:0}.brand p{display:none}.layout{grid-template-columns:1fr;padding:14px 10px 40px}.sidebar{display:none}.mobile-chapter{display:block}.toolbar{top:65px}.hero{padding:19px}.hero h2{font-size:21px}.topbar-inner{padding:10px 12px}.question-card{padding:14px}.qtext{font-size:13px}.toolbar-spacer{display:none}}
+@media print{.topbar,.sidebar,.toolbar,.floating-top{display:none!important}.layout{display:block;padding:0}.question-card{break-inside:avoid;box-shadow:none}.hero{color:#000;background:#fff;border:1px solid #ccc}}
+</style>
+</head>
+<body>
+<header class="topbar"><div class="topbar-inner"><div class="brand"><h1>Django 互动答题题库</h1><p>Chapter 1–8 · 共 400 题 · 离线可用</p></div><div class="progress-wrap"><div class="progress-meta"><span id="progressText">已作答 0 / 50</span><span id="progressPercent">0%</span></div><div class="progress-track"><div class="progress-bar" id="progressBar"></div></div></div></div></header>
+<div class="layout">
+<aside class="sidebar"><div class="side-title">答题模式</div><button class="mode-btn active" data-mode="chapter">当前章节（50题）</button><button class="mode-btn" data-mode="all">全部章节（400题）</button><button class="mode-btn" data-mode="wrong">错题本</button><div class="side-sep"></div><div class="side-title">选择章节</div><div id="chapterList"></div></aside>
+<main class="main">
+<section class="hero"><h2 id="heroTitle">Chapter 1</h2><p id="heroSubtitle"></p></section>
+<div class="toolbar">
+<select id="mobileChapter" class="select mobile-chapter"></select>
+<button class="btn" id="prevBtn">← 上一章</button><button class="btn" id="nextBtn">下一章 →</button>
+<div class="toolbar-spacer"></div><span class="counter" id="viewCounter"></span>
+<button class="btn primary" id="submitBtn">交卷并查看对错</button><button class="btn danger" id="resetBtn">重做当前内容</button>
+</div>
+<div id="resultBanner" class="result-banner"></div>
+<div id="quizContainer"></div>
+<div class="footer">答案和核对说明来自已整理的 Chapter 1–8 题库。答题记录自动保存在本浏览器中。</div>
+</main>
+</div>
+<button class="floating-top" title="回到顶部" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+<script src="app.js"></script>
+</body>
+</html>
